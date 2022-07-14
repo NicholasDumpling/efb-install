@@ -236,7 +236,7 @@ debian_require_install() {
 download_repo() {
   echo "下载 repository 中 . . ."
   cd /root >>/dev/null 2>&1
-  git clone https://github.com/shzxm/efb-install.git ~/.ehforwarderbot/profiles/default/ >>/dev/null 2>&1
+  git clone https://github.com/NicholasDumpling/efb-install.git ~/.ehforwarderbot/profiles/default/ >>/dev/null 2>&1
   cd ~/.ehforwarderbot/profiles/default/ >>/dev/null 2>&1
   echo "Hello World!" >~/.ehforwarderbot/profiles/default/.lock
 }
@@ -245,6 +245,7 @@ pypi_install() {
   echo "下载安装 pypi 依赖中 . . ."
   $PYV -m pip install --upgrade pip >>/dev/null 2>&1
   $PYV -m pip install -r requirements.txt >>/dev/null 2>&1
+  $PYV -m pip install -U git+https://github.com/shejialuo/efb-wechat-slave
   $PYV -m pip install --upgrade Pillow >>/dev/null 2>&1
   sudo -H $PYV -m pip install --ignore-installed PyYAML >>/dev/null 2>&1
 }
@@ -259,7 +260,7 @@ configure() {
 }
 
 login_screen() {
-  cd /root/.ehforwarderbot/profiles/default
+  cd /.ehforwarderbot/profiles/default
   screen -S efb -X quit >>/dev/null 2>&1
   screen -L -dmS efb
   sleep 4
@@ -267,14 +268,14 @@ login_screen() {
   screen -x -S efb -p 0 -X stuff "/usr/local/bin/ehforwarderbot"
   screen -x -S efb -p 0 -X stuff $'\n'
   sleep 1
-  while [ ! -f "/root/.ehforwarderbot/profiles/default/blueset.wechat/wxpy.pkl" ]; do
+  while [ ! -f "/.ehforwarderbot/profiles/default/blueset.wechat/wxpy.pkl" ]; do
     echo "请 扫一扫 二维码登录 微信"
-    cat /root/.ehforwarderbot/profiles/default/screenlog.0
+    cat /.ehforwarderbot/profiles/default/screenlog.0
     sleep 5
   done
   sleep 5
   screen -S efb -X quit >>/dev/null 2>&1
-  rm -rf /root/.ehforwarderbot/profiles/default/screenlog.0
+  rm -rf /.ehforwarderbot/profiles/default/screenlog.0
 }
 
 systemctl_reload() {
@@ -346,7 +347,7 @@ start_installation() {
 }
 
 cleanup() {
-  if [ ! -x "/root/.ehforwarderbot/profiles" ]; then
+  if [ ! -x "/.ehforwarderbot/profiles" ]; then
     echo "目录不存在不需要卸载。"
   else
     echo "正在关闭 efb"
@@ -356,7 +357,7 @@ cleanup() {
     pip3 uninstall -y -r ~/.ehforwarderbot/profiles/defaultrequirements.txt
     echo "正在删除 efb 文件 . . ."
     rm -rf /etc/systemd/system/efb.service >>/dev/null 2>&1
-    rm -rf /root/.ehforwarderbot >>/dev/null 2>&1
+    rm -rf /.ehforwarderbot >>/dev/null 2>&1
     echo "卸载完成 . . ."
   fi
 }
@@ -367,7 +368,7 @@ reinstall() {
 }
 
 cleansession() {
-  if [ ! -x "/root/.ehforwarderbot/profiles" ]; then
+  if [ ! -x "/.ehforwarderbot/profiles" ]; then
     echo "目录不存在请重新安装 efb。"
     exit 1
   fi
